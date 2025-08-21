@@ -99,40 +99,40 @@ def start_exam_page():
     <style>
     .developer-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 25px;
-        border-radius: 15px;
+        padding: 16px;
+        border-radius: 12px;
         text-align: center;
-        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-        margin: 30px 0;
-        animation: fadeInUp 1s ease-out;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+        margin: 16px 0;
+        animation: fadeInUp 0.8s ease-out;
     }
     
     .developer-name {
-        font-size: 24px;
+        font-size: 18px;
         font-weight: bold;
         color: #FFD700;
-        margin: 10px 0;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        margin: 6px 0;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.25);
     }
     
     .developer-title {
-        font-size: 16px;
+        font-size: 13px;
         color: white;
-        margin: 8px 0;
+        margin: 6px 0;
         opacity: 0.9;
     }
     
     .linkedin-link {
         display: inline-block;
         background: rgba(255, 255, 255, 0.2);
-        padding: 8px 20px;
-        border-radius: 25px;
+        padding: 6px 14px;
+        border-radius: 18px;
         color: #FFD700;
         text-decoration: none;
-        font-weight: bold;
-        margin: 15px 0;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
+        font-weight: 600;
+        margin: 8px 0;
+        transition: all 0.25s ease;
+        backdrop-filter: blur(8px);
     }
     
     .linkedin-link:hover {
@@ -153,8 +153,8 @@ def start_exam_page():
     }
     
     .tech-icons {
-        font-size: 18px;
-        margin: 10px 0;
+        font-size: 12px;
+        margin: 6px 0;
         color: white;
     }
     </style>
@@ -167,7 +167,7 @@ def start_exam_page():
         <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
             🔗 تواصل معي على LinkedIn
         </a>
-        <p style="margin: 15px 0 0 0; font-size: 14px; color: white; opacity: 0.8;">
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: white; opacity: 0.8;">
             ⭐ إذا أعجبك التطبيق، شاركني رأيك وتجربتك!
         </p>
     </div>
@@ -344,22 +344,8 @@ def exam_page():
                 css_class = "question-answered"
             else:
                 css_class = "question-unanswered"
-            questions_html += f'<div class="question-number {css_class}" data-question="{i}">{i + 1}</div>'
+            questions_html += f'<a class="question-number {css_class}" href="?q={i}" data-question="{i}">{i + 1}</a>'
         questions_html += '</div>'
-        
-        # This Javascript finds any click on a question number and reloads the page
-        # with a URL parameter like "?q=5". The Python code above catches this.
-        questions_html += """
-        <script>
-            const questionButtons = document.querySelectorAll('.question-number[data-question]');
-            questionButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const questionIndex = this.getAttribute('data-question');
-                    window.parent.location.search = `q=${questionIndex}`;
-                });
-            });
-        </script>
-        """
         st.markdown(questions_html, unsafe_allow_html=True)
 
 def results_page():
@@ -435,40 +421,40 @@ def results_page():
     <style>
     .developer-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 25px;
-        border-radius: 15px;
+        padding: 16px;
+        border-radius: 12px;
         text-align: center;
-        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-        margin: 30px 0;
-        animation: fadeInUp 1s ease-out;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+        margin: 16px 0;
+        animation: fadeInUp 0.8s ease-out;
     }
     
     .developer-name {
-        font-size: 24px;
+        font-size: 18px;
         font-weight: bold;
         color: #FFD700;
-        margin: 10px 0;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        margin: 6px 0;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.25);
     }
     
     .developer-title {
-        font-size: 16px;
+        font-size: 13px;
         color: white;
-        margin: 8px 0;
+        margin: 6px 0;
         opacity: 0.9;
     }
     
     .linkedin-link {
         display: inline-block;
         background: rgba(255, 255, 255, 0.2);
-        padding: 8px 20px;
-        border-radius: 25px;
+        padding: 6px 14px;
+        border-radius: 18px;
         color: #FFD700;
         text-decoration: none;
-        font-weight: bold;
-        margin: 15px 0;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
+        font-weight: 600;
+        margin: 8px 0;
+        transition: all 0.25s ease;
+        backdrop-filter: blur(8px);
     }
     
     .linkedin-link:hover {
@@ -489,8 +475,8 @@ def results_page():
     }
     
     .tech-icons {
-        font-size: 18px;
-        margin: 10px 0;
+        font-size: 12px;
+        margin: 6px 0;
         color: white;
     }
     </style>
@@ -503,7 +489,7 @@ def results_page():
         <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
             🔗 تواصل معي على LinkedIn
         </a>
-        <p style="margin: 15px 0 0 0; font-size: 14px; color: white; opacity: 0.8;">
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: white; opacity: 0.8;">
             ⭐ إذا أعجبك التطبيق، شاركني رأيك وتجربتك!
         </p>
     </div>
