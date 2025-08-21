@@ -293,27 +293,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-        
-        with col2:
-            # قائمة منسدلة للانتقال المباشر
-            question_options = []
-            for i in range(total_questions):
-                q_key = f"q_{i}"
-                if i == st.session_state.current_question:
-                    status = "📍 (الحالي)"
-                elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
-                    status = "✅ (مُجاب)"
-                else:
-                    status = "⭕ (غير مُجاب)"
-                question_options.append(f"السؤال {i + 1} {status}")
-            
-            selected_question = st.selectbox(
-                "انتقل إلى سؤال:",
-                options=question_options,
-                index=st.session_state.current_question,
-                key="question_selector"
-            )
-            
+
             # استخراج رقم السؤال من الاختيار
             if selected_question:
                 selected_index = int(selected_question.split()[1]) - 1
