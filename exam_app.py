@@ -90,6 +90,9 @@ def start_exam_page():
                 st.session_state.current_question = 0
                 st.session_state.answers = {}
                 st.rerun()
+            # FIX: The 'else' block is now correctly placed and indented
+            else:
+                st.error("No questions available. Make sure questions.json file exists")
 
     # Footer المطور - تصميم متقدم
     st.markdown("---")
@@ -170,8 +173,6 @@ def start_exam_page():
         </p>
     </div>
     """, unsafe_allow_html=True)
-              else:
-                st.error("No questions available. Make sure questions.json file exists")
 
 def exam_page():
     """Exam page"""
@@ -591,8 +592,8 @@ def results_page():
     <div class="developer-card">
         <h4 style="margin: 0; color: white;">🚀 تم تطوير هذا التطبيق بواسطة</h4>
         <div class="developer-name">Marwan Al-Masrrat</div>
-        <div class="developer-title">💻 AI Enthusiast</div>
-        <div class="tech-icons">🐍 Python |  🤖 AI/ML 
+        <div class="developer-title">💻 Full Stack Developer & AI Enthusiast</div>
+        <div class="tech-icons">🐍 Python | ⚛️ React | 🤖 AI/ML | ☁️ Cloud</div>
         <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
             🔗 تواصل معي على LinkedIn
         </a>
