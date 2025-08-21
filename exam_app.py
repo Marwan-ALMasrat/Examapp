@@ -228,18 +228,88 @@ def exam_page():
         progress = (st.session_state.current_question + 1) / len(st.session_state.exam_questions)
         st.progress(progress)
         
-        # خريطة الأسئلة
-        st.markdown("### خريطة الأسئلة")
-        
-        # تقسيم الأسئلة إلى صفوف
-        questions_per_row = 13
-        for row in range(0, len(st.session_state.exam_questions), questions_per_row):
-            cols = st.columns(min(questions_per_row, len(st.session_state.exam_questions) - row))
-            
-            # استبدل الجزء من السطر 231 إلى 248 بهذا الكود:
+      # خيار بديل أكثر ضغطاً - استبدل خريطة الأسئلة بهذا:
 
-        # خريطة الأسئلة
-        st.markdown("### خريطة الأسئلة")
+        # خريطة الأسئلة - نسخة مصغرة جداً
+        st.markdown("### 🗺️ التنقل السريع")
+        
+        # شريط التقدم مع الإحصائيات
+        answered_count = len([a for a in st.session_state.answers.values() if a])
+        total_questions = len(st.session_state.exam_questions)
+        progress_percent = (answered_count / total_questions) * 100
+        
+        st.progress(progress_percent / 100, text=f"التقدم: {answered_count}/{total_questions} ({progress_percent:.0f}%)")
+        
+        # أزرار تنقل مضغوطة
+        col1, col2, col3 = st.columns([1, 2, 1])
+        
+        with col1:
+            if st.session_state.current_question > 0:
+                if st.button("⏮️ أول سؤال", key="first_q"):
+                    st.session_state.current_question = 0
+                    st.rerun()
+        
+        with col2:
+            # قائمة منسدلة للانتقال المباشر
+            question_options = []
+            for i in range(total_questions):
+                q_key = f"q_{i}"
+                if i == st.session_state.current_question:
+                    status = "📍 (الحالي)"
+                elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
+                    status = "✅ (مُجاب)"
+                else:
+                    status = "⭕ (غير مُجاب)"
+                question_options.append(f"السؤال {i + 1} {status}")
+            
+            selected_question = st.selectbox(
+                "انتقل إلى سؤال:",
+                options=question_options,
+                index=st.session_state.current_question,
+                key="question_selector"
+            )
+            
+            # استخراج رقم السؤال من الاختيار
+            if selected_question:
+                selected_index = int(selected_question.split()[1]) - 1
+                if selected_index != st.session_state.current_question:
+                    st.session_state.current_question = selected_index
+                    st.rerun()
+        
+        with col3:
+            if st.session_state.current_question < total_questions - 1:
+                if st.button("⏭️ آخر سؤال", key="last_q"):
+                    st.session_state.current_question = total_questions - 1
+                    st.rerun()
+        
+        # عرض سريع للأسئلة المجاورة (اختياري)
+        if st.checkbox("🔍 عرض الأسئلة المجاورة", key="show_neighbors"):
+            neighbor_cols = st.columns(5)
+            current = st.session_state.current_question
+            
+            for i, col in enumerate(neighbor_cols):
+                q_index = current - 2 + i
+                if 0 <= q_index < total_questions:
+                    q_key = f"q_{q_index}"
+                    
+                    if q_index == current:
+                        label = f"📍{q_index + 1}"
+                        button_type = "primary"
+                    elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
+                        label = f"✅{q_index + 1}"
+                        button_type = "secondary"
+                    else:
+                        label = f"{q_index + 1}"
+                        button_type = None
+                    
+                    if button_type:
+                        if col.button(label, key=f"neighbor_{q_index}", type=button_type):
+                            st.session_state.current_question = q_index
+                            st.rerun()
+                    else:
+                        if col.button(label, key=f"neighbor_{q_index}"):
+                            st.session_state.current_question = q_index
+                            st.rerun()
         
         # تقسيم الأسئلة إلى صفوف
         questions_per_row = 13
