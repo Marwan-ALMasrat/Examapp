@@ -294,19 +294,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-            # استخراج رقم السؤال من الاختيار
-            if selected_question:
-                selected_index = int(selected_question.split()[1]) - 1
-                if selected_index != st.session_state.current_question:
-                    st.session_state.current_question = selected_index
-                    st.rerun()
-        
-        with col3:
-            if st.session_state.current_question < total_questions - 1:
-                if st.button("⏭️ آخر سؤال", key="last_q"):
-                    st.session_state.current_question = total_questions - 1
-                    st.rerun()
-        
         # عرض سريع للأسئلة المجاورة (اختياري)
         if st.checkbox("🔍 عرض الأسئلة المجاورة", key="show_neighbors"):
             neighbor_cols = st.columns(5)
