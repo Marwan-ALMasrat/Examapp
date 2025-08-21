@@ -175,16 +175,20 @@ def start_exam_page():
 
 def exam_page():
     """Exam page"""
-    # [MODIFIED] Handle navigation from Questions Map click via URL parameters
+    # [FIXED] Handle navigation from Questions Map click via URL parameters
+    # This block runs first to check if a navigation action was triggered
     query_params = st.query_params
     if "q" in query_params:
         try:
             target_question = int(query_params.get("q"))
+            # Check if it's a valid index and different from the current one
             if 0 <= target_question < len(st.session_state.exam_questions) and st.session_state.current_question != target_question:
                 st.session_state.current_question = target_question
+                # Important: Clear the parameter and rerun to show the new question
                 st.query_params.clear()
                 st.rerun()
         except (ValueError, TypeError):
+            # If the param is invalid, just clear it
             st.query_params.clear()
 
     exam_system = ExamSystem()
@@ -343,22 +347,20 @@ def exam_page():
             questions_html += f'<div class="question-number {css_class}" data-question="{i}">{i + 1}</div>'
         questions_html += '</div>'
         
-        # [MODIFIED] JavaScript now uses URL parameters to trigger navigation
+        # This Javascript finds any click on a question number and reloads the page
+        # with a URL parameter like "?q=5". The Python code above catches this.
         questions_html += """
         <script>
             const questionButtons = document.querySelectorAll('.question-number[data-question]');
             questionButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const questionIndex = this.getAttribute('data-question');
-                    // Setting window.parent.location.search triggers a rerun in Streamlit
                     window.parent.location.search = `q=${questionIndex}`;
                 });
             });
         </script>
         """
         st.markdown(questions_html, unsafe_allow_html=True)
-        
-        # [REMOVED] The old navigation workarounds and the selectbox are gone.
 
 def results_page():
     """Results page"""
@@ -421,43 +423,12 @@ def results_page():
                 if 'explanation' in question:
                     st.info(f"**Explanation:** {question['explanation']}")
     
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🔄 New Exam", use_container_width=True, type="primary"):
-            for key in list(st.session_state.keys()):
-                del st.session_state[key]
-            st.rerun()
-    
-    with col2:
-        if st.button("📊 Export Results", use_container_width=True):
-            results_data = {
-                "exam_date": datetime.now().isoformat(),
-                "total_questions": total_questions,
-                "correct_answers": correct_answers,
-                "score_percentage": score_percentage,
-                "time_taken": str(datetime.now() - st.session_state.start_time),
-                "detailed_answers": []
-            }
-            
-            for i, question in enumerate(st.session_state.exam_questions):
-                question_key = f"q_{i}"
-                user_answer = st.session_state.answers.get(question_key, [])
-                correct_answer = question['correct_answer']
-                
-                results_data["detailed_answers"].append({
-                    "question_id": question.get('id', i),
-                    "question": question['question'],
-                    "user_answer": user_answer,
-                    "correct_answer": correct_answer,
-                    "is_correct": set(user_answer) == set(correct_answer)
-                })
-            
-            st.download_button(
-                label="📥 Download Results (JSON)",
-                data=json.dumps(results_data, ensure_ascii=False, indent=2),
-                file_name=f"exam_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-                mime="application/json"
-            )
+    # [REMOVED] The "Export Results" button has been removed.
+    # Only the "New Exam" button remains.
+    if st.button("🔄 New Exam", use_container_width=True, type="primary"):
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        st.rerun()
 
     st.markdown("---")
     st.markdown("""
