@@ -27,14 +27,6 @@ def start_exam_page():
             st.error(f"خطأ في قراءة الملف: {str(e)}")
     
     st.markdown("---")
-    
-    # باقي الكود...
-
-
-
-
-
-
 import streamlit as st
 import json
 import random
@@ -44,7 +36,7 @@ from pathlib import Path
 
 # إعداد الصفحة
 st.set_page_config(
-    page_title="نظام الامتحانات",
+    page_title="AWS AI Practitioner Prep Questions",
     page_icon="📝",
     layout="wide"
 )
