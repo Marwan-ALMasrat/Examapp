@@ -8,7 +8,7 @@ from pathlib import Path
 # إعداد الصفحة
 st.set_page_config(
     page_title="AWS AI Practitioner Prep Questions",
-    page_icon="📝",
+    page_icon="",
     layout="wide"
 )
 
