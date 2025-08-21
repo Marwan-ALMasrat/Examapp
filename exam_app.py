@@ -277,8 +277,7 @@ def exam_page():
                     if col.button(
                         str(q_index + 1), 
                         key=f"nav_btn_{q_index}",
-                        type=button_style,
-                        help=f"Go to question {q_index + 1}"
+                        type=button_style
                     ):
                         st.session_state.current_question = q_index
                         st.rerun()
@@ -463,7 +462,7 @@ def results_page():
         <h4 style="margin: 0; color: white;">🚀 تم تطوير هذا التطبيق بواسطة</h4>
         <div class="developer-name">Marwan Al-Masrrat</div>
         <div class="developer-title">💻 AI Enthusiast</div>
-        <div class="tech-icons">🐍 Python |  🤖 AI/ML
+        <div class="tech-icons">🐍 Python |  🤖 AI/ML 
         <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
             🔗 تواصل معي على LinkedIn
         </a>
