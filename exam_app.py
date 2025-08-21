@@ -90,7 +90,6 @@ def start_exam_page():
                 st.session_state.current_question = 0
                 st.session_state.answers = {}
                 st.rerun()
-            # FIX: The 'else' block is now correctly placed and indented
             else:
                 st.error("No questions available. Make sure questions.json file exists")
 
@@ -163,8 +162,8 @@ def start_exam_page():
     <div class="developer-card">
         <h4 style="margin: 0; color: white;">🚀 تم تطوير هذا التطبيق بواسطة</h4>
         <div class="developer-name">Marwan Al-Masrrat</div>
-        <div class="developer-title">💻 AI Enthusiast</div>
-        <div class="tech-icons">🐍 Python |  🤖 AI/ML 
+        <div class="developer-title">💻 Full Stack Developer & AI Enthusiast</div>
+        <div class="tech-icons">🐍 Python | ⚛️ React | 🤖 AI/ML | ☁️ Cloud</div>
         <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
             🔗 تواصل معي على LinkedIn
         </a>
@@ -176,6 +175,18 @@ def start_exam_page():
 
 def exam_page():
     """Exam page"""
+    # [MODIFIED] Handle navigation from Questions Map click via URL parameters
+    query_params = st.query_params
+    if "q" in query_params:
+        try:
+            target_question = int(query_params.get("q"))
+            if 0 <= target_question < len(st.session_state.exam_questions) and st.session_state.current_question != target_question:
+                st.session_state.current_question = target_question
+                st.query_params.clear()
+                st.rerun()
+        except (ValueError, TypeError):
+            st.query_params.clear()
+
     exam_system = ExamSystem()
     
     # Check if time is up
@@ -226,7 +237,6 @@ def exam_page():
         question_key = f"q_{st.session_state.current_question}"
         
         if question_type == 'single' or select_count == 1:
-            # Single choice question - radio buttons
             options = [f"{key}. {value}" for key, value in question['options'].items()]
             selected = st.radio(
                 "Choose the correct answer:",
@@ -236,11 +246,10 @@ def exam_page():
             )
             
             if selected:
-                selected_key = selected[0]  # Take first character
+                selected_key = selected[0]
                 st.session_state.answers[question_key] = [selected_key]
         
         else:
-            # Multiple choice question - checkboxes
             st.write("Select the correct answers:")
             selected_options = []
             
@@ -276,7 +285,6 @@ def exam_page():
         # Enhanced questions map for mobile phones
         st.markdown("### Questions Map")
         
-        # Custom CSS for responsive questions grid
         st.markdown("""
         <style>
         .questions-container {
@@ -290,7 +298,6 @@ def exam_page():
             background: rgba(0,0,0,0.02);
             border-radius: 10px;
         }
-        
         .question-number {
             min-width: 45px;
             height: 45px;
@@ -306,118 +313,57 @@ def exam_page():
             text-decoration: none;
             margin: 2px;
         }
-        
         .question-number:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-        
-        .question-answered {
-            background-color: #28a745 !important;
-            color: white !important;
-        }
-        
-        .question-unanswered {
-            background-color: #dc3545 !important;
-            color: white !important;
-        }
-        
-        .question-current {
-            background-color: white !important;
-            color: #333 !important;
-            border: 3px solid #28a745 !important;
-        }
-        
-        /* Mobile responsive */
+        .question-answered { background-color: #28a745 !important; color: white !important; }
+        .question-unanswered { background-color: #dc3545 !important; color: white !important; }
+        .question-current { background-color: white !important; color: #333 !important; border: 3px solid #28a745 !important; }
         @media (max-width: 768px) {
-            .questions-container {
-                gap: 6px;
-            }
-            .question-number {
-                min-width: 40px;
-                height: 40px;
-                font-size: 13px;
-            }
+            .questions-container { gap: 6px; }
+            .question-number { min-width: 40px; height: 40px; font-size: 13px; }
         }
-        
         @media (max-width: 480px) {
-            .questions-container {
-                gap: 5px;
-            }
-            .question-number {
-                min-width: 38px;
-                height: 38px;
-                font-size: 12px;
-            }
+            .questions-container { gap: 5px; }
+            .question-number { min-width: 38px; height: 38px; font-size: 12px; }
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Create HTML for questions grid with click functionality
         questions_html = '<div class="questions-container">'
-        
         for i in range(len(st.session_state.exam_questions)):
             q_key = f"q_{i}"
-            
-            # Determine CSS class
             if i == st.session_state.current_question:
                 css_class = "question-current"
             elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
                 css_class = "question-answered"
             else:
                 css_class = "question-unanswered"
-            
             questions_html += f'<div class="question-number {css_class}" data-question="{i}">{i + 1}</div>'
-        
         questions_html += '</div>'
         
-        # Add JavaScript for click functionality
+        # [MODIFIED] JavaScript now uses URL parameters to trigger navigation
         questions_html += """
         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const questionButtons = document.querySelectorAll('[data-question]');
+            const questionButtons = document.querySelectorAll('.question-number[data-question]');
             questionButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const questionIndex = parseInt(this.getAttribute('data-question'));
-                    window.parent.postMessage({
-                        type: 'streamlit:setComponentValue',
-                        value: questionIndex
-                    }, '*');
+                    const questionIndex = this.getAttribute('data-question');
+                    // Setting window.parent.location.search triggers a rerun in Streamlit
+                    window.parent.location.search = `q=${questionIndex}`;
                 });
             });
-        });
         </script>
         """
-        
         st.markdown(questions_html, unsafe_allow_html=True)
         
-        # Streamlit buttons for navigation (using selectbox as workaround)
-        if st.session_state.get('navigate_to_question') is not None:
-            target_question = st.session_state.navigate_to_question
-            if 0 <= target_question < len(st.session_state.exam_questions):
-                st.session_state.current_question = target_question
-                st.session_state.navigate_to_question = None
-                st.rerun()
-        
-        # Quick navigation selectbox
-        st.markdown("#### Quick Navigation:")
-        selected_q = st.selectbox(
-            "Jump to question:",
-            options=list(range(len(st.session_state.exam_questions))),
-            index=st.session_state.current_question,
-            format_func=lambda x: f"Question {x + 1}",
-            key="quick_nav"
-        )
-        
-        if selected_q != st.session_state.current_question:
-            st.session_state.current_question = selected_q
-            st.rerun()
+        # [REMOVED] The old navigation workarounds and the selectbox are gone.
 
 def results_page():
     """Results page"""
     st.title("🎉 Exam Results")
     
-    # Calculate score
     total_questions = len(st.session_state.exam_questions)
     correct_answers = 0
     
@@ -429,21 +375,16 @@ def results_page():
         if set(user_answer) == set(correct_answer):
             correct_answers += 1
     
-    score_percentage = (correct_answers / total_questions) * 100
+    score_percentage = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
     
-    # Display overall score
     col1, col2, col3 = st.columns(3)
-    
     with col1:
         st.metric("Final Score", f"{score_percentage:.1f}%")
-    
     with col2:
         st.metric("Correct Answers", f"{correct_answers}/{total_questions}")
-    
     with col3:
         st.metric("Wrong Answers", f"{total_questions - correct_answers}/{total_questions}")
     
-    # Determine performance level
     if score_percentage >= 90:
         st.success("🏆 Excellent! Outstanding performance")
     elif score_percentage >= 80:
@@ -457,7 +398,6 @@ def results_page():
     
     st.markdown("---")
     
-    # Display answer details
     if st.checkbox("Show Answer Details"):
         for i, question in enumerate(st.session_state.exam_questions):
             question_key = f"q_{i}"
@@ -481,19 +421,15 @@ def results_page():
                 if 'explanation' in question:
                     st.info(f"**Explanation:** {question['explanation']}")
     
-    # Action buttons
     col1, col2 = st.columns(2)
-    
     with col1:
         if st.button("🔄 New Exam", use_container_width=True, type="primary"):
-            # Reset all variables
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
     
     with col2:
         if st.button("📊 Export Results", use_container_width=True):
-            # Create JSON file for results
             results_data = {
                 "exam_date": datetime.now().isoformat(),
                 "total_questions": total_questions,
@@ -523,7 +459,6 @@ def results_page():
                 mime="application/json"
             )
 
-    # Footer المطور - تصميم متقدم
     st.markdown("---")
     st.markdown("""
     <style>
@@ -607,39 +542,24 @@ def main():
     """Main application function"""
     init_session_state()
     
-    # Add custom CSS
     st.markdown("""
     <style>
     .stButton > button {
         border-radius: 10px;
     }
     
-    /* Mobile improvements */
     @media (max-width: 768px) {
-        .question-grid {
-            grid-template-columns: repeat(5, 1fr) !important;
-        }
-        .question-btn {
-            width: 45px !important;
-            height: 45px !important;
-            font-size: 12px !important;
-        }
+        .question-grid { grid-template-columns: repeat(5, 1fr) !important; }
+        .question-btn { width: 45px !important; height: 45px !important; font-size: 12px !important; }
     }
     
     @media (max-width: 480px) {
-        .question-grid {
-            grid-template-columns: repeat(4, 1fr) !important;
-        }
-        .question-btn {
-            width: 40px !important;
-            height: 40px !important;
-            font-size: 11px !important;
-        }
+        .question-grid { grid-template-columns: repeat(4, 1fr) !important; }
+        .question-btn { width: 40px !important; height: 40px !important; font-size: 11px !important; }
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # Navigate between pages
     if not st.session_state.exam_started:
         start_exam_page()
     elif st.session_state.exam_finished:
