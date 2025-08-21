@@ -1,3 +1,40 @@
+
+def start_exam_page():
+    """صفحة بداية الامتحان"""
+    st.title("🎓 نظام الامتحانات")
+    
+    # قسم رفع ملف الأسئلة
+    st.markdown("### 📂 رفع ملف الأسئلة")
+    uploaded_file = st.file_uploader(
+        "اختر ملف الأسئلة (JSON)", 
+        type=['json'],
+        help="ارفع ملف questions.json الخاص بك"
+    )
+    
+    if uploaded_file is not None:
+        try:
+            # قراءة وحفظ الملف
+            content = uploaded_file.read()
+            questions_data = json.loads(content.decode('utf-8'))
+            
+            # حفظ الملف محلياً
+            with open('questions.json', 'w', encoding='utf-8') as f:
+                json.dump(questions_data, f, ensure_ascii=False, indent=2)
+            
+            st.success(f"تم رفع الملف بنجاح! عدد الأسئلة: {len(questions_data)}")
+            
+        except Exception as e:
+            st.error(f"خطأ في قراءة الملف: {str(e)}")
+    
+    st.markdown("---")
+    
+    # باقي الكود...
+
+
+
+
+
+
 import streamlit as st
 import json
 import random
