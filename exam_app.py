@@ -90,22 +90,88 @@ def start_exam_page():
                 st.session_state.current_question = 0
                 st.session_state.answers = {}
                 st.rerun()
-            else:
-                st.error("No questions available. Make sure questions.json file exists")
 
-    # Footer بسيط للصفحة الرئيسية
+    # Footer المطور - تصميم متقدم
+    st.markdown("---")
     st.markdown("""
-    <div style='text-align: center; margin-top: 40px; padding: 20px; 
-                border-top: 2px solid #e0e0e0;'>
-        <div style='color: #666; font-size: 14px; margin-bottom: 8px;'>
-            💻 Developed with ❤️ by <strong style='color: #667eea;'>Marwan Al-Masrrat</strong>
-        </div>
-        <a href='https://www.linkedin.com/in/marwan-al-masrat' target='_blank' 
-           style='color: #0077B5; text-decoration: none; font-size: 13px;'>
-           🔗 Connect on LinkedIn
+    <style>
+    .developer-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 25px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        margin: 30px 0;
+        animation: fadeInUp 1s ease-out;
+    }
+    
+    .developer-name {
+        font-size: 24px;
+        font-weight: bold;
+        color: #FFD700;
+        margin: 10px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .developer-title {
+        font-size: 16px;
+        color: white;
+        margin: 8px 0;
+        opacity: 0.9;
+    }
+    
+    .linkedin-link {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 20px;
+        border-radius: 25px;
+        color: #FFD700;
+        text-decoration: none;
+        font-weight: bold;
+        margin: 15px 0;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+    
+    .linkedin-link:hover {
+        background: rgba(255, 215, 0, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .tech-icons {
+        font-size: 18px;
+        margin: 10px 0;
+        color: white;
+    }
+    </style>
+    
+    <div class="developer-card">
+        <h4 style="margin: 0; color: white;">🚀 تم تطوير هذا التطبيق بواسطة</h4>
+        <div class="developer-name">Marwan Al-Masrrat</div>
+        <div class="developer-title">💻 Full Stack Developer & AI Enthusiast</div>
+        <div class="tech-icons">🐍 Python | ⚛️ React | 🤖 AI/ML | ☁️ Cloud</div>
+        <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
+            🔗 تواصل معي على LinkedIn
         </a>
+        <p style="margin: 15px 0 0 0; font-size: 14px; color: white; opacity: 0.8;">
+            ⭐ إذا أعجبك التطبيق، شاركني رأيك وتجربتك!
+        </p>
     </div>
     """, unsafe_allow_html=True)
+            else:
+                st.error("No questions available. Make sure questions.json file exists")
 
 def exam_page():
     """Exam page"""
@@ -246,7 +312,7 @@ def exam_page():
         }
         
         .question-answered {
-            background-color: #007bff !important;
+            background-color: #28a745 !important;
             color: white !important;
         }
         
@@ -256,9 +322,9 @@ def exam_page():
         }
         
         .question-current {
-            background-color: #28a745 !important;
-            color: white !important;
-            border: 3px solid #155724 !important;
+            background-color: white !important;
+            color: #333 !important;
+            border: 3px solid #28a745 !important;
         }
         
         /* Mobile responsive */
@@ -286,7 +352,7 @@ def exam_page():
         </style>
         """, unsafe_allow_html=True)
         
-        # Create HTML for questions grid
+        # Create HTML for questions grid with click functionality
         questions_html = '<div class="questions-container">'
         
         for i in range(len(st.session_state.exam_questions)):
@@ -300,54 +366,51 @@ def exam_page():
             else:
                 css_class = "question-unanswered"
             
-            questions_html += f'<div class="question-number {css_class}" onclick="window.parent.postMessage({{type: \'streamlit:setComponentValue\', value: {i}}}, \'*\')">{i + 1}</div>'
+            questions_html += f'<div class="question-number {css_class}" data-question="{i}">{i + 1}</div>'
         
         questions_html += '</div>'
         
+        # Add JavaScript for click functionality
+        questions_html += """
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionButtons = document.querySelectorAll('[data-question]');
+            questionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const questionIndex = parseInt(this.getAttribute('data-question'));
+                    window.parent.postMessage({
+                        type: 'streamlit:setComponentValue',
+                        value: questionIndex
+                    }, '*');
+                });
+            });
+        });
+        </script>
+        """
+        
         st.markdown(questions_html, unsafe_allow_html=True)
         
-        # Alternative: Streamlit buttons as backup (hidden but functional)
-        st.markdown('<div style="display: none;">', unsafe_allow_html=True)
+        # Streamlit buttons for navigation (using selectbox as workaround)
+        if st.session_state.get('navigate_to_question') is not None:
+            target_question = st.session_state.navigate_to_question
+            if 0 <= target_question < len(st.session_state.exam_questions):
+                st.session_state.current_question = target_question
+                st.session_state.navigate_to_question = None
+                st.rerun()
         
-        # Create buttons in rows for navigation
-        questions_per_row = 13
-        for row_start in range(0, len(st.session_state.exam_questions), questions_per_row):
-            cols = st.columns(min(questions_per_row, len(st.session_state.exam_questions) - row_start))
-            
-            for i, col in enumerate(cols):
-                q_index = row_start + i
-                if q_index < len(st.session_state.exam_questions):
-                    q_key = f"q_{q_index}"
-                    
-                    # Create clickable button with proper type handling
-                    if q_index == st.session_state.current_question:
-                        # Current question button (green)
-                        if col.button(
-                            str(q_index + 1), 
-                            key=f"nav_btn_{q_index}",
-                            type="primary"
-                        ):
-                            st.session_state.current_question = q_index
-                            st.rerun()
-                    elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
-                        # Answered question button (blue)
-                        if col.button(
-                            str(q_index + 1), 
-                            key=f"nav_btn_{q_index}",
-                            type="secondary"
-                        ):
-                            st.session_state.current_question = q_index
-                            st.rerun()
-                    else:
-                        # Unanswered question button (red)
-                        if col.button(
-                            str(q_index + 1), 
-                            key=f"nav_btn_{q_index}"
-                        ):
-                            st.session_state.current_question = q_index
-                            st.rerun()
+        # Quick navigation selectbox
+        st.markdown("#### Quick Navigation:")
+        selected_q = st.selectbox(
+            "Jump to question:",
+            options=list(range(len(st.session_state.exam_questions))),
+            index=st.session_state.current_question,
+            format_func=lambda x: f"Question {x + 1}",
+            key="quick_nav"
+        )
         
-        st.markdown('</div>', unsafe_allow_html=True)
+        if selected_q != st.session_state.current_question:
+            st.session_state.current_question = selected_q
+            st.rerun()
 
 def results_page():
     """Results page"""
@@ -528,13 +591,12 @@ def results_page():
     <div class="developer-card">
         <h4 style="margin: 0; color: white;">🚀 تم تطوير هذا التطبيق بواسطة</h4>
         <div class="developer-name">Marwan Al-Masrrat</div>
-        <div class="developer-title">💻 Full Stack Developer & AI Enthusiast</div>
-        <div class="tech-icons">🐍 Python | ⚛️ React | 🤖 AI/ML | ☁️ Cloud</div>
+        <div class="developer-title">💻 AI Enthusiast</div>
+        <div class="tech-icons">🐍 Python | 🤖 AI/ML 
         <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
             🔗 تواصل معي على LinkedIn
         </a>
         <p style="margin: 15px 0 0 0; font-size: 14px; color: white; opacity: 0.8;">
-            ⭐ إذا أعجبك التطبيق، شاركني رأيك وتجربتك!
         </p>
     </div>
     """, unsafe_allow_html=True)
