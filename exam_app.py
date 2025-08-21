@@ -170,7 +170,7 @@ def start_exam_page():
         </p>
     </div>
     """, unsafe_allow_html=True)
-        else:
+              else:
                 st.error("No questions available. Make sure questions.json file exists")
 
 def exam_page():
