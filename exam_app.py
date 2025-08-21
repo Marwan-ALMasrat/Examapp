@@ -229,25 +229,38 @@ def exam_page():
         for row in range(0, len(st.session_state.exam_questions), questions_per_row):
             cols = st.columns(min(questions_per_row, len(st.session_state.exam_questions) - row))
             
+            # استبدل الجزء من السطر 231 إلى 248 بهذا الكود:
+
+        # خريطة الأسئلة
+        st.markdown("### خريطة الأسئلة")
+        
+        # تقسيم الأسئلة إلى صفوف
+        questions_per_row = 13
+        for row in range(0, len(st.session_state.exam_questions), questions_per_row):
+            cols = st.columns(min(questions_per_row, len(st.session_state.exam_questions) - row))
+            
             for i, col in enumerate(cols):
                 q_index = row + i
                 if q_index < len(st.session_state.exam_questions):
                     q_key = f"q_{q_index}"
                     
-                    # تحديد لون الزر
+                    # تحديد لون الزر وإنشاء الزر بالطريقة الصحيحة
                     if q_index == st.session_state.current_question:
-                        button_type = "primary"
                         label = f"📍 {q_index + 1}"
+                        if col.button(label, key=f"nav_{q_index}", type="primary"):
+                            st.session_state.current_question = q_index
+                            st.rerun()
                     elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
-                        button_type = "secondary"
                         label = f"✅ {q_index + 1}"
+                        if col.button(label, key=f"nav_{q_index}", type="secondary"):
+                            st.session_state.current_question = q_index
+                            st.rerun()
                     else:
-                        button_type = None
                         label = f"{q_index + 1}"
-                    
-                    if col.button(label, key=f"nav_{q_index}", type=button_type):
-                        st.session_state.current_question = q_index
-                        st.rerun()
+                        if col.button(label, key=f"nav_{q_index}"):
+                            st.session_state.current_question = q_index
+                            st.rerun()
+                        
 
 def results_page():
     """صفحة النتائج"""
