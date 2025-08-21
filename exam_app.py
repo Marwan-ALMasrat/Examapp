@@ -67,7 +67,7 @@ def init_session_state():
 
 def start_exam_page():
     """Exam start page"""
-    st.title("AWS AI Practitioner Prep Questions")
+    st.title("🎓 Exam System")
     
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -265,22 +265,33 @@ def exam_page():
                 if q_index < len(st.session_state.exam_questions):
                     q_key = f"q_{q_index}"
                     
-                    # Determine button style
+                    # Create clickable button with proper type handling
                     if q_index == st.session_state.current_question:
-                        button_style = "primary"
+                        # Current question button
+                        if col.button(
+                            str(q_index + 1), 
+                            key=f"nav_btn_{q_index}",
+                            type="primary"
+                        ):
+                            st.session_state.current_question = q_index
+                            st.rerun()
                     elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
-                        button_style = "secondary"
+                        # Answered question button
+                        if col.button(
+                            str(q_index + 1), 
+                            key=f"nav_btn_{q_index}",
+                            type="secondary"
+                        ):
+                            st.session_state.current_question = q_index
+                            st.rerun()
                     else:
-                        button_style = None
-                    
-                    # Create clickable button
-                    if col.button(
-                        str(q_index + 1), 
-                        key=f"nav_btn_{q_index}",
-                        type=button_style
-                    ):
-                        st.session_state.current_question = q_index
-                        st.rerun()
+                        # Unanswered question button
+                        if col.button(
+                            str(q_index + 1), 
+                            key=f"nav_btn_{q_index}"
+                        ):
+                            st.session_state.current_question = q_index
+                            st.rerun()
 
 def results_page():
     """Results page"""
@@ -461,8 +472,8 @@ def results_page():
     <div class="developer-card">
         <h4 style="margin: 0; color: white;">🚀 تم تطوير هذا التطبيق بواسطة</h4>
         <div class="developer-name">Marwan Al-Masrrat</div>
-        <div class="developer-title">💻 AI Enthusiast</div>
-        <div class="tech-icons">🐍 Python |  🤖 AI/ML 
+        <div class="developer-title">💻 Full Stack Developer & AI Enthusiast</div>
+        <div class="tech-icons">🐍 Python | ⚛️ React | 🤖 AI/ML | ☁️ Cloud</div>
         <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
             🔗 تواصل معي على LinkedIn
         </a>
