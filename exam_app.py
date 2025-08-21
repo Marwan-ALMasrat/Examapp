@@ -228,26 +228,71 @@ def exam_page():
         progress = (st.session_state.current_question + 1) / len(st.session_state.exam_questions)
         st.progress(progress)
         
-      # خيار بديل أكثر ضغطاً - استبدل خريطة الأسئلة بهذا:
+     # استبدل CSS في دالة main() بهذا الكود البسيط والمحسن:
 
-        # خريطة الأسئلة - نسخة مصغرة جداً
-        st.markdown("### 🗺️ التنقل السريع")
+def main():
+    """الدالة الرئيسية للتطبيق"""
+    init_session_state()
+    
+    # CSS محسن لخريطة الأسئلة على الهواتف
+    st.markdown("""
+    <style>
+    /* تحسين أزرار خريطة الأسئلة */
+    .stButton > button {
+        border-radius: 8px;
+        width: 100% !important;
+        height: 40px !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        margin: 2px 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* تحسينات خاصة للهواتف */
+    @media (max-width: 768px) {
+        .stButton > button {
+            height: 35px !important;
+            font-size: 12px !important;
+            margin: 1px 0 !important;
+        }
         
-        # شريط التقدم مع الإحصائيات
-        answered_count = len([a for a in st.session_state.answers.values() if a])
-        total_questions = len(st.session_state.exam_questions)
-        progress_percent = (answered_count / total_questions) * 100
+        /* تقليل المسافات بين الأعمدة */
+        div[data-testid="column"] {
+            padding: 0 2px !important;
+        }
         
-        st.progress(progress_percent / 100, text=f"التقدم: {answered_count}/{total_questions} ({progress_percent:.0f}%)")
-        
-        # أزرار تنقل مضغوطة
-        col1, col2, col3 = st.columns([1, 2, 1])
-        
-        with col1:
-            if st.session_state.current_question > 0:
-                if st.button("⏮️ أول سؤال", key="first_q"):
-                    st.session_state.current_question = 0
-                    st.rerun()
+        /* تحسين العناوين */
+        h3 {
+            font-size: 1.1rem !important;
+            margin-bottom: 10px !important;
+        }
+    }
+    
+    /* شريط التقدم */
+    .stProgress > div > div {
+        background-color: #1f77b4;
+        height: 8px !important;
+    }
+    
+    /* تقليل padding العام */
+    .block-container {
+        padding-top: 1rem !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # باقي كود main()
+    if not st.session_state.exam_started:
+        start_exam_page()
+    elif st.session_state.exam_finished:
+        results_page()
+    else:
+        exam_page()
+
+if __name__ == "__main__":
+    main()
         
         with col2:
             # قائمة منسدلة للانتقال المباشر
