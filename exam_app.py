@@ -293,35 +293,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-        # عرض سريع للأسئلة المجاورة (اختياري)
-        if st.checkbox("🔍 عرض الأسئلة المجاورة", key="show_neighbors"):
-            neighbor_cols = st.columns(5)
-            current = st.session_state.current_question
-            
-            for i, col in enumerate(neighbor_cols):
-                q_index = current - 2 + i
-                if 0 <= q_index < total_questions:
-                    q_key = f"q_{q_index}"
-                    
-                    if q_index == current:
-                        label = f"📍{q_index + 1}"
-                        button_type = "primary"
-                    elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
-                        label = f"✅{q_index + 1}"
-                        button_type = "secondary"
-                    else:
-                        label = f"{q_index + 1}"
-                        button_type = None
-                    
-                    if button_type:
-                        if col.button(label, key=f"neighbor_{q_index}", type=button_type):
-                            st.session_state.current_question = q_index
-                            st.rerun()
-                    else:
-                        if col.button(label, key=f"neighbor_{q_index}"):
-                            st.session_state.current_question = q_index
-                            st.rerun()
         
         # تقسيم الأسئلة إلى صفوف
         questions_per_row = 13
