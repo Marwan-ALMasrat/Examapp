@@ -1,42 +1,6 @@
-
-def start_exam_page():
-    """صفحة بداية الامتحان"""
-    st.title("🎓 نظام الامتحانات")
-    
-    # قسم رفع ملف الأسئلة
-    st.markdown("### 📂 رفع ملف الأسئلة")
-    uploaded_file = st.file_uploader(
-        "اختر ملف الأسئلة (JSON)", 
-        type=['json'],
-        help="ارفع ملف questions.json الخاص بك"
-    )
-    
-    if uploaded_file is not None:
-        try:
-            # قراءة وحفظ الملف
-            content = uploaded_file.read()
-            questions_data = json.loads(content.decode('utf-8'))
-            
-            # حفظ الملف محلياً
-            with open('questions.json', 'w', encoding='utf-8') as f:
-                json.dump(questions_data, f, ensure_ascii=False, indent=2)
-            
-            st.success(f"تم رفع الملف بنجاح! عدد الأسئلة: {len(questions_data)}")
-            
-        except Exception as e:
-            st.error(f"خطأ في قراءة الملف: {str(e)}")
-    
-    st.markdown("---")
 import streamlit as st
 import json
 import random
-
-
-
-
-
-
-
 from datetime import datetime, timedelta
 import time
 from pathlib import Path
@@ -104,6 +68,31 @@ def init_session_state():
 def start_exam_page():
     """صفحة بداية الامتحان"""
     st.title("AWS AI Practitioner Prep Questions")
+    
+    # قسم رفع ملف الأسئلة
+    st.markdown("### 📂 رفع ملف الأسئلة")
+    uploaded_file = st.file_uploader(
+        "اختر ملف الأسئلة (JSON)", 
+        type=['json'],
+        help="ارفع ملف questions.json الخاص بك"
+    )
+    
+    if uploaded_file is not None:
+        try:
+            # قراءة وحفظ الملف
+            content = uploaded_file.read()
+            questions_data = json.loads(content.decode('utf-8'))
+            
+            # حفظ الملف محلياً
+            with open('questions.json', 'w', encoding='utf-8') as f:
+                json.dump(questions_data, f, ensure_ascii=False, indent=2)
+            
+            st.success(f"تم رفع الملف بنجاح! عدد الأسئلة: {len(questions_data)}")
+            
+        except Exception as e:
+            st.error(f"خطأ في قراءة الملف: {str(e)}")
+    
+    st.markdown("---")
     
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -205,6 +194,8 @@ def exam_page():
             
             st.session_state.answers[question_key] = selected_options
         
+        st.markdown("---")
+        
         # أزرار التنقل
         col1, col2, col3 = st.columns([1, 2, 1])
         
@@ -224,103 +215,108 @@ def exam_page():
                     st.session_state.exam_finished = True
                     st.rerun()
         
-        # شريط التقدم
-        progress = (st.session_state.current_question + 1) / len(st.session_state.exam_questions)
-        st.progress(progress)
+        st.markdown("---")
         
-     # استبدل CSS في دالة main() بهذا الكود البسيط والمحسن:
-
-def main():
-    """الدالة الرئيسية للتطبيق"""
-    init_session_state()
-    
-    # CSS محسن لخريطة الأسئلة على الهواتف
-    st.markdown("""
-    <style>
-    /* تحسين أزرار خريطة الأسئلة */
-    .stButton > button {
-        border-radius: 8px;
-        width: 100% !important;
-        height: 40px !important;
-        font-size: 14px !important;
-        font-weight: bold !important;
-        margin: 2px 0 !important;
-        padding: 0 !important;
-    }
-    
-    /* تحسينات خاصة للهواتف */
-    @media (max-width: 768px) {
-        .stButton > button {
-            height: 35px !important;
-            font-size: 12px !important;
-            margin: 1px 0 !important;
+        # خريطة الأسئلة المحسّنة للهواتف
+        st.markdown("### خريطة الأسئلة")
+        
+        # CSS مخصص لتحسين مظهر الأزرار
+        st.markdown("""
+        <style>
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 5px;
+            margin: 10px 0;
         }
-        
-        /* تقليل المسافات بين الأعمدة */
-        div[data-testid="column"] {
-            padding: 0 2px !important;
+        .question-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            margin: 2px;
         }
-        
-        /* تحسين العناوين */
-        h3 {
-            font-size: 1.1rem !important;
-            margin-bottom: 10px !important;
+        .question-answered {
+            background-color: #28a745 !important;
+            color: white !important;
         }
-    }
-    
-    /* شريط التقدم */
-    .stProgress > div > div {
-        background-color: #1f77b4;
-        height: 8px !important;
-    }
-    
-    /* تقليل padding العام */
-    .block-container {
-        padding-top: 1rem !important;
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # باقي كود main()
-    if not st.session_state.exam_started:
-        start_exam_page()
-    elif st.session_state.exam_finished:
-        results_page()
-    else:
-        exam_page()
-
-if __name__ == "__main__":
-    main()
+        .question-unanswered {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+        .question-current {
+            background-color: #007bff !important;
+            color: white !important;
+            border: 3px solid #0056b3 !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         
-        # تقسيم الأسئلة إلى صفوف
-        questions_per_row = 13
-        for row in range(0, len(st.session_state.exam_questions), questions_per_row):
-            cols = st.columns(min(questions_per_row, len(st.session_state.exam_questions) - row))
+        # إنشاء شبكة الأسئلة
+        questions_html = '<div class="question-grid">'
+        
+        for i in range(len(st.session_state.exam_questions)):
+            q_key = f"q_{i}"
             
-            for i, col in enumerate(cols):
-                q_index = row + i
-                if q_index < len(st.session_state.exam_questions):
-                    q_key = f"q_{q_index}"
-                    
-                    # تحديد لون الزر وإنشاء الزر بالطريقة الصحيحة
-                    if q_index == st.session_state.current_question:
-                        label = f"📍 {q_index + 1}"
-                        if col.button(label, key=f"nav_{q_index}", type="primary"):
-                            st.session_state.current_question = q_index
-                            st.rerun()
-                    elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
-                        label = f"✅ {q_index + 1}"
-                        if col.button(label, key=f"nav_{q_index}", type="secondary"):
-                            st.session_state.current_question = q_index
-                            st.rerun()
-                    else:
-                        label = f"{q_index + 1}"
-                        if col.button(label, key=f"nav_{q_index}"):
-                            st.session_state.current_question = q_index
-                            st.rerun()
+            # تحديد فئة CSS للزر
+            if i == st.session_state.current_question:
+                btn_class = "question-current"
+            elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
+                btn_class = "question-answered"
+            else:
+                btn_class = "question-unanswered"
+            
+            questions_html += f'<div class="question-btn {btn_class}">{i + 1}</div>'
+        
+        questions_html += '</div>'
+        
+        st.markdown(questions_html, unsafe_allow_html=True)
+        
+        # أزرار التنقل السريع (بديل تفاعلي)
+        st.markdown("#### الانتقال إلى سؤال محدد:")
+        
+        # تقسيم الأسئلة إلى مجموعات للتنقل السريع
+        questions_per_group = 10
+        groups = []
+        
+        for i in range(0, len(st.session_state.exam_questions), questions_per_group):
+            end_idx = min(i + questions_per_group - 1, len(st.session_state.exam_questions) - 1)
+            groups.append(f"الأسئلة {i + 1}-{end_idx + 1}")
+        
+        if len(groups) > 1:
+            selected_group = st.selectbox("اختر مجموعة الأسئلة:", groups, key="group_selector")
+            
+            if selected_group:
+                group_index = groups.index(selected_group)
+                start_q = group_index * questions_per_group
+                end_q = min(start_q + questions_per_group, len(st.session_state.exam_questions))
+                
+                # أزرار للأسئلة في المجموعة المختارة
+                cols = st.columns(min(5, end_q - start_q))
+                
+                for i, col in enumerate(cols):
+                    q_index = start_q + i
+                    if q_index < end_q:
+                        q_key = f"q_{q_index}"
                         
+                        # تحديد نص الزر
+                        if q_index == st.session_state.current_question:
+                            label = f"📍 {q_index + 1}"
+                        elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
+                            label = f"✅ {q_index + 1}"
+                        else:
+                            label = f"{q_index + 1}"
+                        
+                        if col.button(label, key=f"goto_{q_index}", use_container_width=True):
+                            st.session_state.current_question = q_index
+                            st.rerun()
 
 def results_page():
     """صفحة النتائج"""
@@ -442,8 +438,28 @@ def main():
     .stButton > button {
         border-radius: 10px;
     }
-    .stProgress > div > div {
-        background-color: #1f77b4;
+    
+    /* تحسينات للهواتف المحمولة */
+    @media (max-width: 768px) {
+        .question-grid {
+            grid-template-columns: repeat(5, 1fr) !important;
+        }
+        .question-btn {
+            width: 45px !important;
+            height: 45px !important;
+            font-size: 12px !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .question-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+        }
+        .question-btn {
+            width: 40px !important;
+            height: 40px !important;
+            font-size: 11px !important;
+        }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -458,107 +474,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-# في نهاية دالة results_page()
-
-    # Footer المطور - تصميم متقدم
-    st.markdown("---")
-    st.markdown("""
-    <style>
-    .developer-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 25px;
-        border-radius: 15px;
-        text-align: center;
-        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-        margin: 30px 0;
-        animation: fadeInUp 1s ease-out;
-    }
-    
-    .developer-name {
-        font-size: 24px;
-        font-weight: bold;
-        color: #FFD700;
-        margin: 10px 0;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .developer-title {
-        font-size: 16px;
-        color: white;
-        margin: 8px 0;
-        opacity: 0.9;
-    }
-    
-    .linkedin-link {
-        display: inline-block;
-        background: rgba(255, 255, 255, 0.2);
-        padding: 8px 20px;
-        border-radius: 25px;
-        color: #FFD700;
-        text-decoration: none;
-        font-weight: bold;
-        margin: 15px 0;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-    }
-    
-    .linkedin-link:hover {
-        background: rgba(255, 215, 0, 0.2);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-    
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .tech-icons {
-        font-size: 18px;
-        margin: 10px 0;
-        color: white;
-    }
-    </style>
-    
-    <div class="developer-card">
-        <h4 style="margin: 0; color: white;">🚀 تم تطوير هذا التطبيق بواسطة</h4>
-        <div class="developer-name">Marwan Al-Masrrat</div>
-        <div class="developer-title">💻 AI Enthusiast</div>
-        <div class="tech-icons">🐍 Python | 🤖 AI/ML 
-        <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
-            🔗 تواصل معي على LinkedIn
-        </a>
-        <p style="margin: 15px 0 0 0; font-size: 14px; color: white; opacity: 0.8;">
-            ⭐ إذا أعجبك التطبيق، شاركني رأيك وتجربتك!
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-# في نهاية دالة start_exam_page() - نسخة مبسطة
-
-    # Footer بسيط للصفحة الرئيسية
-    st.markdown("""
-    <div style='text-align: center; margin-top: 40px; padding: 20px; 
-                border-top: 2px solid #e0e0e0;'>
-        <div style='color: #666; font-size: 14px; margin-bottom: 8px;'>
-            💻 Developed with ❤️ by <strong style='color: #667eea;'>Marwan Al-Masrrat</strong>
-        </div>
-        <a href='https://www.linkedin.com/in/marwan-al-masrat' target='_blank' 
-           style='color: #0077B5; text-decoration: none; font-size: 13px;'>
-           🔗 Connect on LinkedIn
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
