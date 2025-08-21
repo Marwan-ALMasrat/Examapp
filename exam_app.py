@@ -209,19 +209,24 @@ def exam_page():
         # Enhanced questions map for mobile phones
         st.markdown("### Questions Map")
         
-        # Custom CSS to improve button appearance
+        # Custom CSS for responsive questions grid
         st.markdown("""
         <style>
-        .question-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-            gap: 5px;
-            margin: 10px 0;
+        .questions-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-start;
+            align-items: flex-start;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(0,0,0,0.02);
+            border-radius: 10px;
         }
-        .question-btn {
-            width: 50px;
-            height: 50px;
-            border: none;
+        
+        .question-number {
+            min-width: 45px;
+            height: 45px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: bold;
@@ -229,34 +234,83 @@ def exam_page():
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
             text-decoration: none;
             margin: 2px;
-            transition: all 0.2s ease;
         }
-        .question-btn:hover {
-            transform: scale(1.05);
+        
+        .question-number:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
+        
         .question-answered {
-            background-color: #28a745 !important;
+            background-color: #007bff !important;
             color: white !important;
         }
+        
         .question-unanswered {
             background-color: #dc3545 !important;
             color: white !important;
         }
+        
         .question-current {
-            background-color: #007bff !important;
+            background-color: #28a745 !important;
             color: white !important;
-            border: 3px solid #0056b3 !important;
+            border: 3px solid #155724 !important;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .questions-container {
+                gap: 6px;
+            }
+            .question-number {
+                min-width: 40px;
+                height: 40px;
+                font-size: 13px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .questions-container {
+                gap: 5px;
+            }
+            .question-number {
+                min-width: 38px;
+                height: 38px;
+                font-size: 12px;
+            }
         }
         </style>
         """, unsafe_allow_html=True)
         
-        # Create clickable question grid
-        st.markdown('<div class="question-grid">', unsafe_allow_html=True)
+        # Create HTML for questions grid
+        questions_html = '<div class="questions-container">'
         
-        # Create buttons in rows for better mobile display
-        questions_per_row = 10
+        for i in range(len(st.session_state.exam_questions)):
+            q_key = f"q_{i}"
+            
+            # Determine CSS class
+            if i == st.session_state.current_question:
+                css_class = "question-current"
+            elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
+                css_class = "question-answered"
+            else:
+                css_class = "question-unanswered"
+            
+            questions_html += f'<div class="question-number {css_class}" onclick="window.parent.postMessage({{type: \'streamlit:setComponentValue\', value: {i}}}, \'*\')">{i + 1}</div>'
+        
+        questions_html += '</div>'
+        
+        st.markdown(questions_html, unsafe_allow_html=True)
+        
+        # Alternative: Streamlit buttons as backup (hidden but functional)
+        st.markdown('<div style="display: none;">', unsafe_allow_html=True)
+        
+        # Create buttons in rows for navigation
+        questions_per_row = 13
         for row_start in range(0, len(st.session_state.exam_questions), questions_per_row):
             cols = st.columns(min(questions_per_row, len(st.session_state.exam_questions) - row_start))
             
@@ -267,7 +321,7 @@ def exam_page():
                     
                     # Create clickable button with proper type handling
                     if q_index == st.session_state.current_question:
-                        # Current question button
+                        # Current question button (green)
                         if col.button(
                             str(q_index + 1), 
                             key=f"nav_btn_{q_index}",
@@ -276,7 +330,7 @@ def exam_page():
                             st.session_state.current_question = q_index
                             st.rerun()
                     elif q_key in st.session_state.answers and st.session_state.answers[q_key]:
-                        # Answered question button
+                        # Answered question button (blue)
                         if col.button(
                             str(q_index + 1), 
                             key=f"nav_btn_{q_index}",
@@ -285,13 +339,15 @@ def exam_page():
                             st.session_state.current_question = q_index
                             st.rerun()
                     else:
-                        # Unanswered question button
+                        # Unanswered question button (red)
                         if col.button(
                             str(q_index + 1), 
                             key=f"nav_btn_{q_index}"
                         ):
                             st.session_state.current_question = q_index
                             st.rerun()
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 def results_page():
     """Results page"""
