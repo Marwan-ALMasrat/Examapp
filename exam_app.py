@@ -498,8 +498,8 @@ def results_page():
     <div class="developer-card">
         <h4 style="margin: 0; color: white;">🚀 تم تطوير هذا التطبيق بواسطة</h4>
         <div class="developer-name">Marwan Al-Masrrat</div>
-        <div class="developer-title">💻 Full Stack Developer & AI Enthusiast</div>
-        <div class="tech-icons">🐍 Python | ⚛️ React | 🤖 AI/ML | ☁️ Cloud</div>
+        <div class="developer-title">💻 AI Enthusiast</div>
+        <div class="tech-icons">🐍 Python | 🤖 AI/ML
         <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
             🔗 تواصل معي على LinkedIn
         </a>
