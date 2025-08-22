@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 import time
 from pathlib import Path
 
-# إعداد الصفحة
 st.set_page_config(
     page_title="AWS AI Practitioner Prep Questions",
     page_icon="",
@@ -160,15 +159,13 @@ def start_exam_page():
     </style>
     
     <div class="developer-card">
-        <h4 style="margin: 0; color: white;">🚀 تم تطوير هذا التطبيق بواسطة</h4>
-        <div class="developer-name">Marwan Al-Masrrat</div>
+        <div class="developer-name">By Marwan Al-Masrrat</div>
         <div class="developer-title">💻 AI Enthusiast</div>
         <div class="tech-icons">🐍 Python  | 🤖 AI/ML 
         <a href="https://www.linkedin.com/in/marwan-al-masrat" target="_blank" class="linkedin-link">
             🔗 تواصل معي على LinkedIn
         </a>
         <p style="margin: 15px 0 0 0; font-size: 14px; color: white; opacity: 0.8;">
-            ⭐ إذا أعجبك التطبيق، شاركني رأيك وتجربتك!
         </p>
     </div>
     """, unsafe_allow_html=True)
